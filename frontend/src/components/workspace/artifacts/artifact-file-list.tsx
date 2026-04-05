@@ -20,6 +20,7 @@ import {
 } from "@/core/utils/files";
 import { cn } from "@/lib/utils";
 
+import { useThread } from "../messages/context";
 import { useArtifacts } from "./context";
 
 export function ArtifactFileList({
@@ -33,6 +34,7 @@ export function ArtifactFileList({
 }) {
   const { t } = useI18n();
   const { select: selectArtifact, setOpen } = useArtifacts();
+  const { isMock } = useThread();
   const [installingFile, setInstallingFile] = useState<string | null>(null);
 
   const handleClick = useCallback(
@@ -93,7 +95,7 @@ export function ArtifactFileList({
               {file.endsWith(".skill") && (
                 <Button
                   variant="ghost"
-                  disabled={installingFile === file}
+                  disabled={isMock || installingFile === file}
                   onClick={(e) => handleInstallSkill(e, file)}
                 >
                   {installingFile === file ? (
@@ -109,6 +111,7 @@ export function ArtifactFileList({
                   filepath: file,
                   threadId: threadId,
                   download: true,
+                  isMock,
                 })}
                 target="_blank"
                 onClick={(e) => e.stopPropagation()}

@@ -130,7 +130,7 @@ function memoryToMarkdown(
             t.settings.memory.markdown.table.confidenceLevel[key];
           const confidenceText =
             typeof value === "number" ? `${levelLabel}` : levelLabel;
-          return `| ${upperFirst(f.category)} | ${confidenceText} | ${f.content} | [${t.settings.memory.markdown.table.view}](${pathOfThread(f.source)}) | ${formatTimeAgo(f.createdAt)} |`;
+          return `| ${upperFirst(f.category)} | ${confidenceText} | ${f.content} | [${t.settings.memory.markdown.table.view}](${pathOfThread(f.sourceThread ?? f.source)}) | ${formatTimeAgo(f.createdAt)} |`;
         }),
       ].join("\n"),
     );

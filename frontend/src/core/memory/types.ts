@@ -36,5 +36,9 @@ export interface UserMemory {
     confidence: number;
     createdAt: string;
     source: string;
+    sourceThread?: {
+      thread_id: string;
+      agent_name?: string;
+    };
   }[];
 }

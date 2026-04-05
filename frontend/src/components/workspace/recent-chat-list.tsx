@@ -54,7 +54,7 @@ import {
   useThreads,
 } from "@/core/threads/hooks";
 import type { AgentThread, AgentThreadState } from "@/core/threads/types";
-import { pathOfThread, titleOfThread } from "@/core/threads/utils";
+import { newChatPathOfPathname, pathOfThread, titleOfThread } from "@/core/threads/utils";
 import { env } from "@/env";
 
 export function RecentChatList() {
@@ -70,13 +70,7 @@ export function RecentChatList() {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameThreadId, setRenameThreadId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
-  const currentNewChatPath = (() => {
-    const match = pathname.match(/^\/workspace\/agents\/([^/]+)\/chats\/[^/]+$/);
-    if (match?.[1]) {
-      return `/workspace/agents/${match[1]}/chats/new`;
-    }
-    return "/workspace/chats/new";
-  })();
+  const currentNewChatPath = newChatPathOfPathname(pathname);
 
   const handleDelete = useCallback(
     (threadId: string) => {

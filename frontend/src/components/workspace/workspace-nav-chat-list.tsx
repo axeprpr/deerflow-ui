@@ -19,7 +19,10 @@ export function WorkspaceNavChatList() {
     <SidebarGroup className="pt-1">
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton isActive={pathname === "/workspace/chats"} asChild>
+          <SidebarMenuButton
+            isActive={pathname.startsWith("/workspace/chats")}
+            asChild
+          >
             <Link className="text-muted-foreground" href="/workspace/chats">
               <MessagesSquare />
               <span>{t.sidebar.chats}</span>

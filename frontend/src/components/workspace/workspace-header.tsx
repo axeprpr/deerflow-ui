@@ -2,7 +2,7 @@
 
 import { MessageSquarePlus } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import {
   SidebarMenu,
@@ -20,7 +20,9 @@ export function WorkspaceHeader({ className }: { className?: string }) {
   const { t } = useI18n();
   const { state } = useSidebar();
   const pathname = usePathname();
-  const newChatPath = newChatPathOfPathname(pathname);
+  const searchParams = useSearchParams();
+  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
+  const newChatPath = `${newChatPathOfPathname(pathname)}${mockSuffix}`;
   return (
     <>
       <div

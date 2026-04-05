@@ -5,7 +5,7 @@ import {
   MessageSquarePlusIcon,
   SettingsIcon,
 } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 import {
@@ -34,14 +34,16 @@ export function CommandPalette() {
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
   const [open, setOpen] = useState(false);
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleNewChat = useCallback(() => {
-    router.push(newChatPathOfPathname(pathname));
+    router.push(`${newChatPathOfPathname(pathname)}${mockSuffix}`);
     setOpen(false);
-  }, [pathname, router]);
+  }, [mockSuffix, pathname, router]);
 
   const handleOpenSettings = useCallback(() => {
     setOpen(false);

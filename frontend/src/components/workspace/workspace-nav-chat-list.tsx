@@ -2,7 +2,7 @@
 
 import { BotIcon, MessagesSquare } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 
 import {
   SidebarGroup,
@@ -15,6 +15,8 @@ import { useI18n } from "@/core/i18n/hooks";
 export function WorkspaceNavChatList() {
   const { t } = useI18n();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
   return (
     <SidebarGroup className="pt-1">
       <SidebarMenu>
@@ -23,7 +25,7 @@ export function WorkspaceNavChatList() {
             isActive={pathname.startsWith("/workspace/chats")}
             asChild
           >
-            <Link className="text-muted-foreground" href="/workspace/chats">
+            <Link className="text-muted-foreground" href={`/workspace/chats${mockSuffix}`}>
               <MessagesSquare />
               <span>{t.sidebar.chats}</span>
             </Link>
@@ -34,7 +36,7 @@ export function WorkspaceNavChatList() {
             isActive={pathname.startsWith("/workspace/agents")}
             asChild
           >
-            <Link className="text-muted-foreground" href="/workspace/agents">
+            <Link className="text-muted-foreground" href={`/workspace/agents${mockSuffix}`}>
               <BotIcon />
               <span>{t.sidebar.agents}</span>
             </Link>

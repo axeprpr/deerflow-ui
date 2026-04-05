@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 import { type PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ArtifactTrigger } from "@/components/workspace/artifacts";
@@ -31,14 +31,13 @@ export default function ChatPage() {
   const { t } = useI18n();
   const [settings, setSettings] = useLocalSettings();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const threadContext = {
     ...settings.context,
     agent_name: undefined,
   };
 
   const { threadId, isNewThread, setIsNewThread, isMock } = useThreadChat();
-  const mockSuffix = isMock ? `?${searchParams.toString() || "mock=true"}` : "";
+  const mockSuffix = isMock ? "?mock=true" : "";
   useSpecificChatMode();
 
   const { showNotification } = useNotification();

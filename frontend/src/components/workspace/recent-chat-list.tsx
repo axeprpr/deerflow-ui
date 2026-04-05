@@ -63,10 +63,10 @@ export function RecentChatList() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { thread_id: threadIdFromPath } = useParams<{ thread_id: string }>();
-  const { data: threads = [] } = useThreads();
-  const { mutate: deleteThread } = useDeleteThread();
-  const { mutate: renameThread } = useRenameThread();
   const isMock = searchParams.get("mock") === "true";
+  const { data: threads = [] } = useThreads(undefined, isMock);
+  const { mutate: deleteThread } = useDeleteThread(isMock);
+  const { mutate: renameThread } = useRenameThread(isMock);
 
   // Rename dialog state
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);

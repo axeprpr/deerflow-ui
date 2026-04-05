@@ -418,10 +418,11 @@ export function useThreads(
     sortOrder: "desc",
     select: ["thread_id", "updated_at", "title", "agent_name"],
   },
+  isMock?: boolean,
 ) {
-  const apiClient = getAPIClient();
+  const apiClient = getAPIClient(isMock);
   return useQuery<AgentThread[]>({
-    queryKey: ["threads", "search", params],
+    queryKey: ["threads", "search", isMock ? "mock" : "default", params],
     queryFn: async () => {
       const maxResults = params.limit;
       const initialOffset = params.offset ?? 0;
@@ -477,11 +478,15 @@ export function useThreads(
   });
 }
 
-export function useDeleteThread() {
+export function useDeleteThread(isMock?: boolean) {
   const queryClient = useQueryClient();
-  const apiClient = getAPIClient();
+  const apiClient = getAPIClient(isMock);
   return useMutation({
     mutationFn: async ({ threadId }: { threadId: string }) => {
+      if (isMock) {
+        return;
+      }
+
       await apiClient.threads.delete(threadId);
 
       const response = await fetch(
@@ -518,9 +523,9 @@ export function useDeleteThread() {
   });
 }
 
-export function useRenameThread() {
+export function useRenameThread(isMock?: boolean) {
   const queryClient = useQueryClient();
-  const apiClient = getAPIClient();
+  const apiClient = getAPIClient(isMock);
   return useMutation({
     mutationFn: async ({
       threadId,
@@ -529,6 +534,9 @@ export function useRenameThread() {
       threadId: string;
       title: string;
     }) => {
+      if (isMock) {
+        return;
+      }
       await apiClient.threads.updateState(threadId, {
         values: { title },
       });

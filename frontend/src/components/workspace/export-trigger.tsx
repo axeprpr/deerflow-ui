@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { getLangGraphBaseURL } from "@/core/config";
 import { useI18n } from "@/core/i18n/hooks";
 import {
   exportThreadAsJSON,
@@ -23,21 +24,30 @@ import { Tooltip } from "./tooltip";
 
 export function ExportTrigger({ threadId }: { threadId: string }) {
   const { t } = useI18n();
-  const { thread } = useThread();
+  const { thread, isMock } = useThread();
 
   const messages = thread.messages;
 
   const handleExport = useCallback(
-    (format: "markdown" | "json") => {
+    async (format: "markdown" | "json") => {
       if (messages.length === 0) {
         toast.error(t.conversation.noMessages);
         return;
       }
-      const agentThread = {
+      let agentThread = {
         thread_id: threadId,
-        updated_at: new Date().toISOString(),
         values: thread.values,
       } as AgentThread;
+      try {
+        const response = await fetch(
+          `${getLangGraphBaseURL(isMock)}/threads/${encodeURIComponent(threadId)}`,
+        );
+        if (response.ok) {
+          agentThread = (await response.json()) as AgentThread;
+        }
+      } catch {
+        // Fall back to current thread values when metadata fetch is unavailable.
+      }
 
       if (format === "markdown") {
         exportThreadAsMarkdown(agentThread, messages);
@@ -46,7 +56,7 @@ export function ExportTrigger({ threadId }: { threadId: string }) {
       }
       toast.success(t.common.exportSuccess);
     },
-    [messages, thread.values, threadId, t],
+    [isMock, messages, thread.values, threadId, t],
   );
 
   if (messages.length === 0) {
@@ -67,11 +77,11 @@ export function ExportTrigger({ threadId }: { threadId: string }) {
         </DropdownMenuTrigger>
       </Tooltip>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onSelect={() => handleExport("markdown")}>
+        <DropdownMenuItem onSelect={() => void handleExport("markdown")}>
           <FileText className="text-muted-foreground" />
           <span>{t.common.exportAsMarkdown}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => handleExport("json")}>
+        <DropdownMenuItem onSelect={() => void handleExport("json")}>
           <FileJson className="text-muted-foreground" />
           <span>{t.common.exportAsJSON}</span>
         </DropdownMenuItem>

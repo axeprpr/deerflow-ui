@@ -1,7 +1,7 @@
 "use client";
 
 import { BotIcon, MessageSquareIcon, Trash2Icon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -34,13 +34,11 @@ interface AgentCardProps {
 export function AgentCard({ agent }: AgentCardProps) {
   const { t } = useI18n();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
   const deleteAgent = useDeleteAgent();
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   function handleChat() {
-    router.push(`/workspace/agents/${agent.name}/chats/new${mockSuffix}`);
+    router.push(`/workspace/agents/${agent.name}/chats/new`);
   }
 
   async function handleDelete() {

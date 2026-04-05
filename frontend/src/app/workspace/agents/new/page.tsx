@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeftIcon, BotIcon, CheckCircleIcon } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 
 import {
@@ -29,8 +29,6 @@ const NAME_RE = /^[A-Za-z0-9-]+$/;
 export default function NewAgentPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
 
   // ── Step 1: name form ──────────────────────────────────────────────────────
   const [step, setStep] = useState<Step>("name");
@@ -126,7 +124,7 @@ export default function NewAgentPage() {
       <Button
         variant="ghost"
         size="icon-sm"
-        onClick={() => router.push(`/workspace/agents${mockSuffix}`)}
+        onClick={() => router.push("/workspace/agents")}
       >
         <ArrowLeftIcon className="h-4 w-4" />
       </Button>
@@ -215,7 +213,7 @@ export default function NewAgentPage() {
                       <Button
                         onClick={() =>
                           router.push(
-                            `/workspace/agents/${agentName}/chats/new${mockSuffix}`,
+                            `/workspace/agents/${agentName}/chats/new`,
                           )
                         }
                       >
@@ -223,7 +221,7 @@ export default function NewAgentPage() {
                       </Button>
                       <Button
                         variant="outline"
-                        onClick={() => router.push(`/workspace/agents${mockSuffix}`)}
+                        onClick={() => router.push("/workspace/agents")}
                       >
                         {t.agents.backToGallery}
                       </Button>

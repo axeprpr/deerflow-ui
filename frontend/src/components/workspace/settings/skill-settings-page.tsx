@@ -1,7 +1,7 @@
 "use client";
 
 import { SparklesIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useI18n } from "@/core/i18n/hooks";
+import { newChatPathOfPathname } from "@/core/threads/utils";
 import { useEnableSkill, useSkills } from "@/core/skills/hooks";
 import type { Skill } from "@/core/skills/type";
 import { env } from "@/env";
@@ -57,6 +58,7 @@ function SkillSettingsList({
 }) {
   const { t } = useI18n();
   const router = useRouter();
+  const pathname = usePathname();
   const [filter, setFilter] = useState<string>("public");
   const { mutate: enableSkill } = useEnableSkill();
   const filteredSkills = useMemo(
@@ -65,7 +67,7 @@ function SkillSettingsList({
   );
   const handleCreateSkill = () => {
     onClose?.();
-    router.push("/workspace/chats/new?mode=skill");
+    router.push(`${newChatPathOfPathname(pathname)}?mode=skill`);
   };
   return (
     <div className="flex w-full flex-col gap-4">

@@ -28,10 +28,10 @@ function agentPathOfDemoThread(threadId: string) {
               ? raw.config.configurable.agentName
               : undefined;
     if (agentName && agentName.trim()) {
-      return `/workspace/agents/${agentName}/chats/${threadId}`;
+      return `/workspace/agents/${agentName}/chats/${threadId}?mock=true`;
     }
   } catch {}
-  return `/workspace/chats/${threadId}`;
+  return `/workspace/chats/${threadId}?mock=true`;
 }
 
 export default function WorkspacePage() {

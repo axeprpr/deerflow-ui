@@ -8,7 +8,7 @@ import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
 import { AgentWelcome } from "@/components/workspace/agent-welcome";
 import { ArtifactTrigger } from "@/components/workspace/artifacts";
-import { ChatBox, useThreadChat } from "@/components/workspace/chats";
+import { ChatBox, useSpecificChatMode, useThreadChat } from "@/components/workspace/chats";
 import { ExportTrigger } from "@/components/workspace/export-trigger";
 import { InputBox } from "@/components/workspace/input-box";
 import { MessageList } from "@/components/workspace/messages";
@@ -42,6 +42,7 @@ export default function AgentChatPage() {
 
   const { threadId, isNewThread, setIsNewThread, isMock } = useThreadChat();
   const mockSuffix = isMock ? `?${searchParams.toString() || "mock=true"}` : "";
+  useSpecificChatMode();
 
   const { showNotification } = useNotification();
   const [thread, sendMessage] = useThreadStream({

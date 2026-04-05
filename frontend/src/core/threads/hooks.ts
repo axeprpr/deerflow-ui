@@ -416,7 +416,7 @@ export function useThreads(
     limit: 50,
     sortBy: "updated_at",
     sortOrder: "desc",
-    select: ["thread_id", "updated_at", "title"],
+    select: ["thread_id", "updated_at", "title", "agent_name"],
   },
 ) {
   const apiClient = getAPIClient();

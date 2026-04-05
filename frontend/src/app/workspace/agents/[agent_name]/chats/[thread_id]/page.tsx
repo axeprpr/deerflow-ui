@@ -2,7 +2,7 @@
 
 import { BotIcon, PlusSquare } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { Button } from "@/components/ui/button";
@@ -18,6 +18,7 @@ import { TodoList } from "@/components/workspace/todo-list";
 import { TokenUsageIndicator } from "@/components/workspace/token-usage-indicator";
 import { Tooltip } from "@/components/workspace/tooltip";
 import { useAgent } from "@/core/agents";
+import { getAPIClient } from "@/core/api";
 import { useI18n } from "@/core/i18n/hooks";
 import { useNotification } from "@/core/notification/hooks";
 import { useLocalSettings } from "@/core/settings";
@@ -69,6 +70,49 @@ export default function AgentChatPage() {
       }
     },
   });
+
+  useEffect(() => {
+    if (isNewThread) {
+      return;
+    }
+    let cancelled = false;
+    void (async () => {
+      try {
+        const state = (await getAPIClient().threads.getState(threadId)) as {
+          config?: {
+            configurable?: Record<string, unknown>;
+          };
+        };
+        const configurable = state.config?.configurable;
+        if (!configurable || cancelled) {
+          return;
+        }
+        setSettings("context", {
+          model_name:
+            typeof configurable.model_name === "string"
+              ? configurable.model_name
+              : undefined,
+          mode:
+            configurable.mode === "flash" ||
+            configurable.mode === "thinking" ||
+            configurable.mode === "pro" ||
+            configurable.mode === "ultra"
+              ? configurable.mode
+              : undefined,
+          reasoning_effort:
+            configurable.reasoning_effort === "minimal" ||
+            configurable.reasoning_effort === "low" ||
+            configurable.reasoning_effort === "medium" ||
+            configurable.reasoning_effort === "high"
+              ? configurable.reasoning_effort
+              : undefined,
+        });
+      } catch {}
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [isNewThread, setSettings, threadId]);
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {

@@ -10,7 +10,7 @@ import {
   Trash2,
 } from "lucide-react";
 import Link from "next/link";
-import { useParams, usePathname, useRouter } from "next/navigation";
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
 import { toast } from "sonner";
 
@@ -61,10 +61,12 @@ export function RecentChatList() {
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { thread_id: threadIdFromPath } = useParams<{ thread_id: string }>();
   const { data: threads = [] } = useThreads();
   const { mutate: deleteThread } = useDeleteThread();
   const { mutate: renameThread } = useRenameThread();
+  const isMock = searchParams.get("mock") === "true";
 
   // Rename dialog state
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -126,13 +128,13 @@ export function RecentChatList() {
         toast.error(t.clipboard.failedToCopyToClipboard);
       }
     },
-    [t],
+    [isMock, t],
   );
 
   const handleExport = useCallback(
     async (thread: AgentThread, format: "markdown" | "json") => {
       try {
-        const apiClient = getAPIClient();
+        const apiClient = getAPIClient(isMock);
         const state = await apiClient.threads.getState<AgentThreadState>(
           thread.thread_id,
         );
@@ -151,7 +153,7 @@ export function RecentChatList() {
         toast.error("Failed to export conversation");
       }
     },
-    [t],
+    [isMock, t],
   );
 
   if (threads.length === 0) {

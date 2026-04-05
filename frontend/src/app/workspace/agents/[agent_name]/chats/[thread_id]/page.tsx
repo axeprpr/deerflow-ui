@@ -37,13 +37,14 @@ export default function AgentChatPage() {
   }>();
 
   const { agent } = useAgent(agent_name);
+  const threadContext = { ...settings.context, agent_name };
 
   const { threadId, isNewThread, setIsNewThread } = useThreadChat();
 
   const { showNotification } = useNotification();
   const [thread, sendMessage] = useThreadStream({
     threadId: isNewThread ? undefined : threadId,
-    context: { ...settings.context, agent_name: agent_name },
+    context: threadContext,
     onStart: () => {
       setIsNewThread(false);
       // ! Important: Never use next.js router for navigation in this case, otherwise it will cause the thread to re-mount and lose all states. Use native history API instead.
@@ -88,6 +89,7 @@ export default function AgentChatPage() {
           return;
         }
         setSettings("context", {
+          agent_name,
           model_name:
             typeof configurable.model_name === "string"
               ? configurable.model_name
@@ -112,7 +114,7 @@ export default function AgentChatPage() {
     return () => {
       cancelled = true;
     };
-  }, [isNewThread, setSettings, threadId]);
+  }, [agent_name, isNewThread, setSettings, threadId]);
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {
@@ -209,14 +211,16 @@ export default function AgentChatPage() {
                         ? "streaming"
                         : "ready"
                   }
-                  context={settings.context}
+                  context={threadContext}
                   extraHeader={
                     isNewThread && (
                       <AgentWelcome agent={agent} agentName={agent_name} />
                     )
                   }
                   disabled={env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true"}
-                  onContextChange={(context) => setSettings("context", context)}
+                  onContextChange={(context) =>
+                    setSettings("context", { ...context, agent_name })
+                  }
                   onSubmit={handleSubmit}
                   onStop={handleStop}
                 />

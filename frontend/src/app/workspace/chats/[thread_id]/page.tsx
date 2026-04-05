@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { type PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ArtifactTrigger } from "@/components/workspace/artifacts";
@@ -29,6 +30,7 @@ import { cn } from "@/lib/utils";
 export default function ChatPage() {
   const { t } = useI18n();
   const [settings, setSettings] = useLocalSettings();
+  const router = useRouter();
   const threadContext = {
     ...settings.context,
     agent_name: undefined,
@@ -84,6 +86,15 @@ export default function ChatPage() {
         if (!configurable || cancelled) {
           return;
         }
+        const agentName =
+          typeof configurable.agent_name === "string" &&
+          configurable.agent_name.trim()
+            ? configurable.agent_name
+            : undefined;
+        if (agentName) {
+          router.replace(`/workspace/agents/${agentName}/chats/${threadId}`);
+          return;
+        }
         setSettings("context", {
           model_name:
             typeof configurable.model_name === "string"
@@ -103,18 +114,14 @@ export default function ChatPage() {
             configurable.reasoning_effort === "high"
               ? configurable.reasoning_effort
               : undefined,
-          agent_name:
-            typeof configurable.agent_name === "string" &&
-            configurable.agent_name.trim()
-              ? configurable.agent_name
-              : undefined,
+          agent_name: undefined,
         });
       } catch {}
     })();
     return () => {
       cancelled = true;
     };
-  }, [isMock, isNewThread, setSettings, threadId]);
+  }, [isMock, isNewThread, router, setSettings, threadId]);
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {

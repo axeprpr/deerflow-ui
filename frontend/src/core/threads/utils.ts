@@ -38,3 +38,12 @@ export function textOfMessage(message: Message) {
 export function titleOfThread(thread: AgentThread) {
   return thread.title ?? thread.values?.title ?? "Untitled";
 }
+
+
+export function newChatPathOfPathname(pathname: string) {
+  const agentMatch = pathname.match(/^\/workspace\/agents\/([^/]+)\/chats(?:\/.*)?$/);
+  if (agentMatch) {
+    return `/workspace/agents/${agentMatch[1]}/chats/new`;
+  }
+  return "/workspace/chats/new";
+}

@@ -13,12 +13,14 @@ import {
 } from "@/components/ui/sidebar";
 import { useI18n } from "@/core/i18n/hooks";
 import { env } from "@/env";
+import { newChatPathOfPathname } from "@/core/threads/utils";
 import { cn } from "@/lib/utils";
 
 export function WorkspaceHeader({ className }: { className?: string }) {
   const { t } = useI18n();
   const { state } = useSidebar();
   const pathname = usePathname();
+  const newChatPath = newChatPathOfPathname(pathname);
   return (
     <>
       <div
@@ -52,10 +54,10 @@ export function WorkspaceHeader({ className }: { className?: string }) {
       <SidebarMenu>
         <SidebarMenuItem>
           <SidebarMenuButton
-            isActive={pathname === "/workspace/chats/new"}
+            isActive={pathname === newChatPath}
             asChild
           >
-            <Link className="text-muted-foreground" href="/workspace/chats/new">
+            <Link className="text-muted-foreground" href={newChatPath}>
               <MessageSquarePlus size={16} />
               <span>{t.sidebar.newChat}</span>
             </Link>

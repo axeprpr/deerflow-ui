@@ -6,7 +6,6 @@ const SUPPORTED_RUN_STREAM_MODES = new Set([
   "events",
   "debug",
   "tasks",
-  "checkpoints",
   "custom",
 ] as const);
 

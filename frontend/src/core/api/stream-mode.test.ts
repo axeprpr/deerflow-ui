@@ -26,6 +26,14 @@ void test("drops unsupported stream modes from array payloads", () => {
   ]);
 });
 
+void test("drops checkpoints from array payloads", () => {
+  const sanitized = sanitizeRunStreamOptions({
+    streamMode: ["values", "checkpoints", "events"],
+  });
+
+  assert.deepEqual(sanitized.streamMode, ["values", "events"]);
+});
+
 void test("drops unsupported stream modes from scalar payloads", () => {
   const sanitized = sanitizeRunStreamOptions({
     streamMode: "tools",

@@ -29,6 +29,10 @@ import { cn } from "@/lib/utils";
 export default function ChatPage() {
   const { t } = useI18n();
   const [settings, setSettings] = useLocalSettings();
+  const threadContext = {
+    ...settings.context,
+    agent_name: undefined,
+  };
 
   const { threadId, isNewThread, setIsNewThread, isMock } = useThreadChat();
   useSpecificChatMode();
@@ -37,7 +41,7 @@ export default function ChatPage() {
 
   const [thread, sendMessage, isUploading] = useThreadStream({
     threadId: isNewThread ? undefined : threadId,
-    context: settings.context,
+    context: threadContext,
     isMock,
     onStart: () => {
       setIsNewThread(false);
@@ -184,12 +188,17 @@ export default function ChatPage() {
                         ? "streaming"
                         : "ready"
                   }
-                  context={settings.context}
+                  context={threadContext}
                   extraHeader={
-                    isNewThread && <Welcome mode={settings.context.mode} />
+                    isNewThread && <Welcome mode={threadContext.mode} />
                   }
                   disabled={env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isUploading}
-                  onContextChange={(context) => setSettings("context", context)}
+                  onContextChange={(context) =>
+                    setSettings("context", {
+                      ...context,
+                      agent_name: undefined,
+                    })
+                  }
                   onSubmit={handleSubmit}
                   onStop={handleStop}
                 />

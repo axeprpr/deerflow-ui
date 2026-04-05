@@ -28,8 +28,9 @@ export function formatThreadAsMarkdown(
   messages: Message[],
 ): string {
   const title = titleOfThread(thread);
-  const createdAt = thread.created_at
-    ? new Date(thread.created_at).toLocaleString()
+  const createdAtSource = thread.created_at ?? thread.updated_at;
+  const createdAt = createdAtSource
+    ? new Date(createdAtSource).toLocaleString()
     : "Unknown";
 
   const lines: string[] = [
@@ -90,7 +91,7 @@ export function formatThreadAsJSON(
   const exportData = {
     title: titleOfThread(thread),
     thread_id: thread.thread_id,
-    created_at: thread.created_at,
+    created_at: thread.created_at ?? thread.updated_at,
     exported_at: new Date().toISOString(),
     messages: messages.map((msg) => ({
       type: msg.type,

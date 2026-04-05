@@ -1,7 +1,7 @@
 "use client";
 
 import { SparklesIcon } from "lucide-react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -59,6 +59,8 @@ function SkillSettingsList({
   const { t } = useI18n();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
   const [filter, setFilter] = useState<string>("public");
   const { mutate: enableSkill } = useEnableSkill();
   const filteredSkills = useMemo(
@@ -67,7 +69,9 @@ function SkillSettingsList({
   );
   const handleCreateSkill = () => {
     onClose?.();
-    router.push(`${newChatPathOfPathname(pathname)}?mode=skill`);
+    const basePath = newChatPathOfPathname(pathname);
+    const query = mockSuffix ? `${mockSuffix}&mode=skill` : "?mode=skill";
+    router.push(`${basePath}${query}`);
   };
   return (
     <div className="flex w-full flex-col gap-4">

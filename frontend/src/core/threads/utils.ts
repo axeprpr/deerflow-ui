@@ -2,8 +2,16 @@ import type { Message } from "@langchain/langgraph-sdk";
 
 import type { AgentThread } from "./types";
 
-export function pathOfThread(threadId: string) {
-  return `/workspace/chats/${threadId}`;
+export function pathOfThread(
+  thread: string | Pick<AgentThread, "thread_id" | "agent_name">,
+) {
+  if (typeof thread === "string") {
+    return `/workspace/chats/${thread}`;
+  }
+  if (thread.agent_name) {
+    return `/workspace/agents/${thread.agent_name}/chats/${thread.thread_id}`;
+  }
+  return `/workspace/chats/${thread.thread_id}`;
 }
 
 export function textOfMessage(message: Message) {

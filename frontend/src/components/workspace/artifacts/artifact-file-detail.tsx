@@ -103,7 +103,7 @@ export function ArtifactFileDetail({
   }, [isSupportPreview]);
 
   const handleInstallSkill = useCallback(async () => {
-    if (isInstalling) return;
+    if (isMock || isInstalling) return;
 
     setIsInstalling(true);
     try {
@@ -122,7 +122,7 @@ export function ArtifactFileDetail({
     } finally {
       setIsInstalling(false);
     }
-  }, [threadId, filepath, isInstalling]);
+  }, [threadId, filepath, isInstalling, isMock]);
   return (
     <Artifact className={cn(className)}>
       <ArtifactHeader className="px-2">
@@ -180,6 +180,7 @@ export function ArtifactFileDetail({
                   label={t.common.install}
                   tooltip={t.common.install}
                   disabled={
+                    isMock ||
                     isInstalling ||
                     env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true"
                   }

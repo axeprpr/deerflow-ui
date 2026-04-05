@@ -5,6 +5,35 @@ import { redirect } from "next/navigation";
 
 import { env } from "@/env";
 
+function agentPathOfDemoThread(threadId: string) {
+  const threadPath = path.resolve(
+    process.cwd(),
+    "public/demo/threads",
+    threadId,
+    "thread.json",
+  );
+  try {
+    const raw = JSON.parse(fs.readFileSync(threadPath, "utf8")) as {
+      metadata?: { agent_name?: unknown; agentName?: unknown };
+      config?: { configurable?: { agent_name?: unknown; agentName?: unknown } };
+    };
+    const agentName =
+      typeof raw.metadata?.agent_name === "string"
+        ? raw.metadata.agent_name
+        : typeof raw.metadata?.agentName === "string"
+          ? raw.metadata.agentName
+          : typeof raw.config?.configurable?.agent_name === "string"
+            ? raw.config.configurable.agent_name
+            : typeof raw.config?.configurable?.agentName === "string"
+              ? raw.config.configurable.agentName
+              : undefined;
+    if (agentName && agentName.trim()) {
+      return `/workspace/agents/${agentName}/chats/${threadId}`;
+    }
+  } catch {}
+  return `/workspace/chats/${threadId}`;
+}
+
 export default function WorkspacePage() {
   if (env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true") {
     const firstThread = fs
@@ -13,7 +42,7 @@ export default function WorkspacePage() {
       })
       .find((thread) => thread.isDirectory() && !thread.name.startsWith("."));
     if (firstThread) {
-      return redirect(`/workspace/chats/${firstThread.name}`);
+      return redirect(agentPathOfDemoThread(firstThread.name));
     }
   }
   return redirect("/workspace/chats/new");

@@ -1,9 +1,10 @@
 "use client";
 
 import { BotIcon, PlusIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
+import { useEffect } from "react";
 import { useAgents } from "@/core/agents";
 import { useI18n } from "@/core/i18n/hooks";
 
@@ -13,6 +14,15 @@ export function AgentGallery() {
   const { t } = useI18n();
   const { agents, isLoading } = useAgents();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isMock = searchParams.get("mock") === "true";
+
+  useEffect(() => {
+    if (!isMock) {
+      return;
+    }
+    router.replace("/workspace/agents");
+  }, [isMock, router]);
 
   const handleNewAgent = () => {
     router.push("/workspace/agents/new");

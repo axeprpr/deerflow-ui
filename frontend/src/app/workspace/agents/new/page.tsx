@@ -1,8 +1,8 @@
 "use client";
 
 import { ArrowLeftIcon, BotIcon, CheckCircleIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import {
   PromptInput,
@@ -29,6 +29,15 @@ const NAME_RE = /^[A-Za-z0-9-]+$/;
 export default function NewAgentPage() {
   const { t } = useI18n();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const isMock = searchParams.get("mock") === "true";
+
+  useEffect(() => {
+    if (!isMock) {
+      return;
+    }
+    router.replace("/workspace/agents/new");
+  }, [isMock, router]);
 
   // ── Step 1: name form ──────────────────────────────────────────────────────
   const [step, setStep] = useState<Step>("name");

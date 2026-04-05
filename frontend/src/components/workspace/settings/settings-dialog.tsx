@@ -9,6 +9,7 @@ import {
   WrenchIcon,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 import {
   Dialog,
@@ -24,6 +25,7 @@ import { NotificationSettingsPage } from "@/components/workspace/settings/notifi
 import { SkillSettingsPage } from "@/components/workspace/settings/skill-settings-page";
 import { ToolSettingsPage } from "@/components/workspace/settings/tool-settings-page";
 import { useI18n } from "@/core/i18n/hooks";
+import { env } from "@/env";
 import { cn } from "@/lib/utils";
 
 type SettingsSection =
@@ -41,6 +43,9 @@ type SettingsDialogProps = React.ComponentProps<typeof Dialog> & {
 export function SettingsDialog(props: SettingsDialogProps) {
   const { defaultSection = "appearance", ...dialogProps } = props;
   const { t } = useI18n();
+  const searchParams = useSearchParams();
+  const isMock = searchParams.get("mock") === "true";
+  const limitToLocalSections = env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock;
   const [activeSection, setActiveSection] =
     useState<SettingsSection>(defaultSection);
 
@@ -52,8 +57,8 @@ export function SettingsDialog(props: SettingsDialogProps) {
     }
   }, [defaultSection, dialogProps.open]);
 
-  const sections = useMemo(
-    () => [
+  const sections = useMemo(() => {
+    const baseSections = [
       {
         id: "appearance",
         label: t.settings.sections.appearance,
@@ -64,6 +69,16 @@ export function SettingsDialog(props: SettingsDialogProps) {
         label: t.settings.sections.notification,
         icon: BellIcon,
       },
+      { id: "about", label: t.settings.sections.about, icon: InfoIcon },
+    ] satisfies Array<{ id: SettingsSection; label: string; icon: typeof PaletteIcon }>;
+
+    if (limitToLocalSections) {
+      return baseSections;
+    }
+
+    return [
+      baseSections[0],
+      baseSections[1],
       {
         id: "memory",
         label: t.settings.sections.memory,
@@ -71,17 +86,24 @@ export function SettingsDialog(props: SettingsDialogProps) {
       },
       { id: "tools", label: t.settings.sections.tools, icon: WrenchIcon },
       { id: "skills", label: t.settings.sections.skills, icon: SparklesIcon },
-      { id: "about", label: t.settings.sections.about, icon: InfoIcon },
-    ],
-    [
-      t.settings.sections.appearance,
-      t.settings.sections.memory,
-      t.settings.sections.tools,
-      t.settings.sections.skills,
-      t.settings.sections.notification,
-      t.settings.sections.about,
-    ],
-  );
+      baseSections[2],
+    ];
+  }, [
+    limitToLocalSections,
+    t.settings.sections.appearance,
+    t.settings.sections.memory,
+    t.settings.sections.tools,
+    t.settings.sections.skills,
+    t.settings.sections.notification,
+    t.settings.sections.about,
+  ]);
+
+  useEffect(() => {
+    if (sections.some((section) => section.id === activeSection)) {
+      return;
+    }
+    setActiveSection("appearance");
+  }, [activeSection, sections]);
   return (
     <Dialog
       {...dialogProps}

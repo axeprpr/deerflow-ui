@@ -70,13 +70,20 @@ export function RecentChatList() {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameThreadId, setRenameThreadId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
+  const currentNewChatPath = (() => {
+    const match = pathname.match(/^\/workspace\/agents\/([^/]+)\/chats\/[^/]+$/);
+    if (match?.[1]) {
+      return `/workspace/agents/${match[1]}/chats/new`;
+    }
+    return "/workspace/chats/new";
+  })();
 
   const handleDelete = useCallback(
     (threadId: string) => {
       deleteThread({ threadId });
       if (threadId === threadIdFromPath) {
         const threadIndex = threads.findIndex((t) => t.thread_id === threadId);
-        let nextPath = "/workspace/chats/new";
+        let nextPath = currentNewChatPath;
         if (threadIndex > -1) {
           if (threads[threadIndex + 1]) {
             nextPath = pathOfThread(threads[threadIndex + 1]!);
@@ -87,7 +94,7 @@ export function RecentChatList() {
         void router.push(nextPath);
       }
     },
-    [deleteThread, router, threadIdFromPath, threads],
+    [currentNewChatPath, deleteThread, router, threadIdFromPath, threads],
   );
 
   const handleRenameClick = useCallback(

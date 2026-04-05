@@ -144,6 +144,7 @@ export function useThreadStream({
                 if (t.thread_id === threadIdRef.current) {
                   return {
                     ...t,
+                    title: update.title,
                     values: {
                       ...t.values,
                       title: update.title,
@@ -415,7 +416,7 @@ export function useThreads(
     limit: 50,
     sortBy: "updated_at",
     sortOrder: "desc",
-    select: ["thread_id", "updated_at", "values"],
+    select: ["thread_id", "updated_at", "title"],
   },
 ) {
   const apiClient = getAPIClient();
@@ -543,6 +544,7 @@ export function useRenameThread() {
             if (t.thread_id === threadId) {
               return {
                 ...t,
+                title,
                 values: {
                   ...t.values,
                   title,

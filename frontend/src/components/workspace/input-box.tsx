@@ -423,7 +423,7 @@ export function InputBox({
               />
             </PromptInputActionMenuContent>
           </PromptInputActionMenu> */}
-            <AddAttachmentsButton className="px-2!" />
+            {!isMock && <AddAttachmentsButton className="px-2!" />}
             <PromptInputActionMenu>
               <ModeHoverGuide
                 mode={

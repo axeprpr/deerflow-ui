@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { type PromptInputMessage } from "@/components/ai-elements/prompt-input";
 import { ArtifactTrigger } from "@/components/workspace/artifacts";
@@ -31,12 +31,14 @@ export default function ChatPage() {
   const { t } = useI18n();
   const [settings, setSettings] = useLocalSettings();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const threadContext = {
     ...settings.context,
     agent_name: undefined,
   };
 
   const { threadId, isNewThread, setIsNewThread, isMock } = useThreadChat();
+  const mockSuffix = isMock ? `?${searchParams.toString() || "mock=true"}` : "";
   useSpecificChatMode();
 
   const { showNotification } = useNotification();
@@ -48,7 +50,7 @@ export default function ChatPage() {
     onStart: () => {
       setIsNewThread(false);
       // ! Important: Never use next.js router for navigation in this case, otherwise it will cause the thread to re-mount and lose all states. Use native history API instead.
-      history.replaceState(null, "", `/workspace/chats/${threadId}`);
+      history.replaceState(null, "", `/workspace/chats/${threadId}${mockSuffix}`);
     },
     onFinish: (state) => {
       if (document.hidden || !document.hasFocus()) {
@@ -92,7 +94,7 @@ export default function ChatPage() {
             ? configurable.agent_name
             : undefined;
         if (agentName) {
-          router.replace(`/workspace/agents/${agentName}/chats/${threadId}`);
+          router.replace(`/workspace/agents/${agentName}/chats/${threadId}${mockSuffix}`);
           return;
         }
         setSettings("context", {
@@ -121,7 +123,7 @@ export default function ChatPage() {
     return () => {
       cancelled = true;
     };
-  }, [isMock, isNewThread, router, setSettings, threadId]);
+  }, [isMock, isNewThread, mockSuffix, router, setSettings, threadId]);
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {

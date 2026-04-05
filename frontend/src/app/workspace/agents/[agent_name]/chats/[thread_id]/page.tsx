@@ -1,7 +1,7 @@
 "use client";
 
 import { BotIcon, PlusSquare } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect } from "react";
 
 import type { PromptInputMessage } from "@/components/ai-elements/prompt-input";
@@ -31,6 +31,7 @@ export default function AgentChatPage() {
   const { t } = useI18n();
   const [settings, setSettings] = useLocalSettings();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const { agent_name } = useParams<{
     agent_name: string;
@@ -39,19 +40,21 @@ export default function AgentChatPage() {
   const { agent } = useAgent(agent_name);
   const threadContext = { ...settings.context, agent_name };
 
-  const { threadId, isNewThread, setIsNewThread } = useThreadChat();
+  const { threadId, isNewThread, setIsNewThread, isMock } = useThreadChat();
+  const mockSuffix = isMock ? `?${searchParams.toString() || "mock=true"}` : "";
 
   const { showNotification } = useNotification();
   const [thread, sendMessage] = useThreadStream({
     threadId: isNewThread ? undefined : threadId,
     context: threadContext,
+    isMock,
     onStart: () => {
       setIsNewThread(false);
       // ! Important: Never use next.js router for navigation in this case, otherwise it will cause the thread to re-mount and lose all states. Use native history API instead.
       history.replaceState(
         null,
         "",
-        `/workspace/agents/${agent_name}/chats/${threadId}`,
+        `/workspace/agents/${agent_name}/chats/${threadId}${mockSuffix}`,
       );
     },
     onFinish: (state) => {
@@ -79,7 +82,7 @@ export default function AgentChatPage() {
     let cancelled = false;
     void (async () => {
       try {
-        const state = (await getAPIClient().threads.getState(threadId)) as {
+        const state = (await getAPIClient(isMock).threads.getState(threadId)) as {
           config?: {
             configurable?: Record<string, unknown>;
           };
@@ -114,7 +117,7 @@ export default function AgentChatPage() {
     return () => {
       cancelled = true;
     };
-  }, [agent_name, isNewThread, setSettings, threadId]);
+  }, [agent_name, isMock, isNewThread, setSettings, threadId]);
 
   const handleSubmit = useCallback(
     (message: PromptInputMessage) => {
@@ -128,7 +131,7 @@ export default function AgentChatPage() {
   }, [thread]);
 
   return (
-    <ThreadContext.Provider value={{ thread }}>
+    <ThreadContext.Provider value={{ thread, isMock }}>
       <ChatBox threadId={threadId}>
         <div className="relative flex size-full min-h-0 justify-between">
           <header
@@ -156,7 +159,7 @@ export default function AgentChatPage() {
                   size="sm"
                   variant="secondary"
                   onClick={() => {
-                    router.push(`/workspace/agents/${agent_name}/chats/new`);
+                    router.push(`/workspace/agents/${agent_name}/chats/new${mockSuffix}`);
                   }}
                 >
                   <PlusSquare /> {t.agents.newChat}

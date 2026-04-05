@@ -8,8 +8,16 @@ export function pathOfThread(
   if (typeof thread === "string") {
     return `/workspace/chats/${thread}`;
   }
-  if (thread.agent_name) {
-    return `/workspace/agents/${thread.agent_name}/chats/${thread.thread_id}`;
+  const metadataAgentName =
+    typeof (thread as AgentThread & { metadata?: { agent_name?: unknown } })
+      .metadata?.agent_name === "string"
+      ? (
+          thread as AgentThread & { metadata?: { agent_name?: string } }
+        ).metadata?.agent_name
+      : undefined;
+  const agentName = thread.agent_name ?? metadataAgentName;
+  if (agentName) {
+    return `/workspace/agents/${agentName}/chats/${thread.thread_id}`;
   }
   return `/workspace/chats/${thread.thread_id}`;
 }

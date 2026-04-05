@@ -72,7 +72,8 @@ export function RecentChatList() {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [renameThreadId, setRenameThreadId] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
-  const currentNewChatPath = newChatPathOfPathname(pathname);
+  const mockSuffix = isMock ? "?mock=true" : "";
+  const currentNewChatPath = `${newChatPathOfPathname(pathname)}${mockSuffix}`;
 
   const handleDelete = useCallback(
     (threadId: string) => {
@@ -82,9 +83,9 @@ export function RecentChatList() {
         let nextPath = currentNewChatPath;
         if (threadIndex > -1) {
           if (threads[threadIndex + 1]) {
-            nextPath = pathOfThread(threads[threadIndex + 1]!);
+            nextPath = `${pathOfThread(threads[threadIndex + 1]!)}${mockSuffix}`;
           } else if (threads[threadIndex - 1]) {
-            nextPath = pathOfThread(threads[threadIndex - 1]!);
+            nextPath = `${pathOfThread(threads[threadIndex - 1]!)}${mockSuffix}`;
           }
         }
         void router.push(nextPath);
@@ -120,7 +121,7 @@ export function RecentChatList() {
         window.location.hostname === "127.0.0.1";
       // On localhost: use Vercel URL; On production: use current origin
       const baseUrl = isLocalhost ? VERCEL_URL : window.location.origin;
-      const shareUrl = `${baseUrl}${pathOfThread(thread)}`;
+      const shareUrl = `${baseUrl}${pathOfThread(thread)}${mockSuffix}`;
       try {
         await navigator.clipboard.writeText(shareUrl);
         toast.success(t.clipboard.linkCopied);
@@ -128,7 +129,7 @@ export function RecentChatList() {
         toast.error(t.clipboard.failedToCopyToClipboard);
       }
     },
-    [isMock, t],
+    [mockSuffix, t],
   );
 
   const handleExport = useCallback(
@@ -171,8 +172,8 @@ export function RecentChatList() {
           <SidebarMenu>
             <div className="flex w-full flex-col gap-1">
               {threads.map((thread) => {
-                const threadPath = pathOfThread(thread);
-                const isActive = threadPath === pathname;
+                const threadPath = `${pathOfThread(thread)}${mockSuffix}`;
+                const isActive = pathOfThread(thread) === pathname;
                 return (
                   <SidebarMenuItem
                     key={thread.thread_id}

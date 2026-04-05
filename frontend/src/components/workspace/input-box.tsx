@@ -388,8 +388,8 @@ export function InputBox({
           className,
         )}
         disabled={disabled}
-        globalDrop
-        multiple
+        globalDrop={!isMock}
+        multiple={!isMock}
         onSubmit={handleSubmit}
         {...props}
       >

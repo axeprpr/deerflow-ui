@@ -435,7 +435,10 @@ export function InputBox({
                     : "flash"
                 }
               >
-                <PromptInputActionMenuTrigger className="gap-1! px-2!">
+                <PromptInputActionMenuTrigger
+                  className="gap-1! px-2!"
+                  disabled={disabled}
+                >
                   <div>
                     {context.mode === "flash" && <ZapIcon className="size-3" />}
                     {context.mode === "thinking" && (
@@ -597,7 +600,10 @@ export function InputBox({
             </PromptInputActionMenu>
             {supportReasoningEffort && context.mode !== "flash" && (
               <PromptInputActionMenu>
-                <PromptInputActionMenuTrigger className="gap-1! px-2!">
+                <PromptInputActionMenuTrigger
+                  className="gap-1! px-2!"
+                  disabled={disabled}
+                >
                   <div className="text-xs font-normal">
                     {t.inputBox.reasoningEffort}:
                     {context.reasoning_effort === "minimal" &&
@@ -715,10 +721,16 @@ export function InputBox({
           <PromptInputTools>
             <ModelSelector
               open={modelDialogOpen}
-              onOpenChange={setModelDialogOpen}
+              onOpenChange={(open) => {
+                if (disabled) {
+                  setModelDialogOpen(false);
+                  return;
+                }
+                setModelDialogOpen(open);
+              }}
             >
               <ModelSelectorTrigger asChild>
-                <PromptInputButton>
+                <PromptInputButton disabled={disabled}>
                   <div className="flex min-w-0 flex-col items-start text-left">
                     <ModelSelectorName className="text-xs font-normal">
                       {selectedModel?.display_name}

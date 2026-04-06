@@ -200,7 +200,11 @@ export default function ChatPage() {
                   extraHeader={
                     isNewThread && <Welcome mode={threadContext.mode} />
                   }
-                  disabled={env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isUploading}
+                  disabled={
+                    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" ||
+                    isMock ||
+                    isUploading
+                  }
                   onContextChange={(context) =>
                     setSettings("context", {
                       ...context,
@@ -210,7 +214,7 @@ export default function ChatPage() {
                   onSubmit={handleSubmit}
                   onStop={handleStop}
                 />
-                {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" && (
+                {(env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock) && (
                   <div className="text-muted-foreground/67 w-full translate-y-12 text-center text-xs">
                     {t.common.notAvailableInDemoMode}
                   </div>

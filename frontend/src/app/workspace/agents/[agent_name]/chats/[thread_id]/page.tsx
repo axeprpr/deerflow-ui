@@ -219,14 +219,14 @@ export default function AgentChatPage() {
                       <AgentWelcome agent={agent} agentName={agent_name} />
                     )
                   }
-                  disabled={env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true"}
+                  disabled={env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock}
                   onContextChange={(context) =>
                     setSettings("context", { ...context, agent_name })
                   }
                   onSubmit={handleSubmit}
                   onStop={handleStop}
                 />
-                {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" && (
+                {(env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock) && (
                   <div className="text-muted-foreground/67 w-full translate-y-12 text-center text-xs">
                     {t.common.notAvailableInDemoMode}
                   </div>

@@ -37,6 +37,7 @@ import { useArtifacts } from "../artifacts";
 import { FlipDisplay } from "../flip-display";
 import { Tooltip } from "../tooltip";
 
+import { useThread } from "./context";
 import { MarkdownContent } from "./markdown-content";
 
 export function MessageGroup({
@@ -49,11 +50,12 @@ export function MessageGroup({
   isLoading?: boolean;
 }) {
   const { t } = useI18n();
+  const { isMock } = useThread();
   const [showAbove, setShowAbove] = useState(
-    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true",
+    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock,
   );
   const [showLastThinking, setShowLastThinking] = useState(
-    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true",
+    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock,
   );
   const steps = useMemo(() => convertToSteps(messages), [messages]);
   const lastToolCallStep = useMemo(() => {

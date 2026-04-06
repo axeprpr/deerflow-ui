@@ -27,7 +27,7 @@ const ChatBox: React.FC<{ children: React.ReactNode; threadId: string }> = ({
   children,
   threadId,
 }) => {
-  const { thread } = useThread();
+  const { thread, isMock } = useThread();
   const pathname = usePathname();
   const threadIdRef = useRef(threadId);
   const layoutRef = useRef<GroupImperativeHandle>(null);
@@ -58,7 +58,7 @@ const ChatBox: React.FC<{ children: React.ReactNode; threadId: string }> = ({
     }
 
     if (
-      env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" &&
+      (env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock) &&
       autoSelectFirstArtifact
     ) {
       if (currentArtifacts.length > 0) {
@@ -74,14 +74,15 @@ const ChatBox: React.FC<{ children: React.ReactNode; threadId: string }> = ({
     selectedArtifact,
     setArtifacts,
     thread.values.artifacts,
+    isMock,
   ]);
 
   const artifactPanelOpen = useMemo(() => {
-    if (env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true") {
+    if (env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock) {
       return artifactsOpen && artifacts?.length > 0;
     }
     return artifactsOpen;
-  }, [artifactsOpen, artifacts]);
+  }, [artifactsOpen, artifacts, isMock]);
 
   const resizableIdBase = useMemo(() => {
     return pathname.replace(/[^a-zA-Z0-9_-]+/g, "-").replace(/^-+|-+$/g, "");

@@ -7,6 +7,7 @@ export function GET() {
         model: "doubao-seed-1-8",
         display_name: "Doubao Seed 1.8",
         supports_thinking: true,
+        supports_reasoning_effort: true,
       },
       {
         id: "deepseek-v3.2",
@@ -14,6 +15,7 @@ export function GET() {
         model: "deepseek-chat",
         display_name: "DeepSeek v3.2",
         supports_thinking: true,
+        supports_reasoning_effort: true,
       },
       {
         id: "gpt-5",
@@ -21,6 +23,7 @@ export function GET() {
         model: "gpt-5",
         display_name: "GPT-5",
         supports_thinking: true,
+        supports_reasoning_effort: true,
       },
       {
         id: "gemini-3-pro",
@@ -28,6 +31,7 @@ export function GET() {
         model: "gemini-3-pro",
         display_name: "Gemini 3 Pro",
         supports_thinking: true,
+        supports_reasoning_effort: true,
       },
     ],
   });

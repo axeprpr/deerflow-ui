@@ -5,7 +5,7 @@ export function GET() {
         name: "deep-research",
         description:
           "Use this skill BEFORE any content generation task (PPT, design, articles, images, videos, reports). Provides a systematic methodology for conducting thorough, multi-angle web research to gather comprehensive information.",
-        license: null,
+        license: "",
         category: "public",
         enabled: true,
       },
@@ -21,7 +21,7 @@ export function GET() {
         name: "github-deep-research",
         description:
           "Conduct multi-round deep research on any GitHub Repo. Use when users request comprehensive analysis, timeline reconstruction, competitive analysis, or in-depth investigation of GitHub. Produces structured markdown reports with executive summaries, chronological timelines, metrics analysis, and Mermaid diagrams. Triggers on Github repository URL or open source projects.",
-        license: null,
+        license: "",
         category: "public",
         enabled: true,
       },
@@ -29,7 +29,7 @@ export function GET() {
         name: "image-generation",
         description:
           "Use this skill when the user requests to generate, create, imagine, or visualize images including characters, scenes, products, or any visual content. Supports structured prompts and reference images for guided generation.",
-        license: null,
+        license: "",
         category: "public",
         enabled: true,
       },
@@ -37,7 +37,7 @@ export function GET() {
         name: "podcast-generation",
         description:
           "Use this skill when the user requests to generate, create, or produce podcasts from text content. Converts written content into a two-host conversational podcast audio format with natural dialogue.",
-        license: null,
+        license: "",
         category: "public",
         enabled: true,
       },
@@ -45,7 +45,7 @@ export function GET() {
         name: "ppt-generation",
         description:
           "Use this skill when the user requests to generate, create, or make presentations (PPT/PPTX). Creates visually rich slides by generating images for each slide and composing them into a PowerPoint file.",
-        license: null,
+        license: "",
         category: "public",
         enabled: true,
       },
@@ -61,7 +61,7 @@ export function GET() {
         name: "vercel-deploy",
         description:
           'Deploy applications and websites to Vercel. Use this skill when the user requests deployment actions such as "Deploy my app", "Deploy this to production", "Create a preview deployment", "Deploy and give me the link", or "Push this live". No authentication required - returns preview URL and claimable deployment link.',
-        license: null,
+        license: "",
         category: "public",
         enabled: true,
       },
@@ -69,7 +69,7 @@ export function GET() {
         name: "video-generation",
         description:
           "Use this skill when the user requests to generate, create, or imagine videos. Supports structured prompts and reference image for guided generation.",
-        license: null,
+        license: "",
         category: "public",
         enabled: true,
       },

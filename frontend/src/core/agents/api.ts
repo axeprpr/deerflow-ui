@@ -2,17 +2,33 @@ import { getBackendBaseURL } from "@/core/config";
 
 import type { Agent, CreateAgentRequest, UpdateAgentRequest } from "./types";
 
+type AgentResponse = Agent & {
+  toolGroups?: string[] | null;
+  model_name?: string | null;
+  modelName?: string | null;
+};
+
+function normalizeAgent(agent: Partial<AgentResponse> & Pick<AgentResponse, "name">): Agent {
+  return {
+    name: agent.name,
+    description: agent.description ?? "",
+    model: agent.model ?? agent.model_name ?? agent.modelName ?? null,
+    tool_groups: agent.tool_groups ?? agent.toolGroups ?? null,
+    soul: agent.soul ?? null,
+  };
+}
+
 export async function listAgents(): Promise<Agent[]> {
   const res = await fetch(`${getBackendBaseURL()}/api/agents`);
   if (!res.ok) throw new Error(`Failed to load agents: ${res.statusText}`);
-  const data = (await res.json()) as { agents: Agent[] };
-  return data.agents;
+  const data = (await res.json()) as { agents: AgentResponse[] };
+  return data.agents.map(normalizeAgent);
 }
 
 export async function getAgent(name: string): Promise<Agent> {
   const res = await fetch(`${getBackendBaseURL()}/api/agents/${name}`);
   if (!res.ok) throw new Error(`Agent '${name}' not found`);
-  return res.json() as Promise<Agent>;
+  return normalizeAgent((await res.json()) as AgentResponse);
 }
 
 export async function createAgent(request: CreateAgentRequest): Promise<Agent> {
@@ -25,7 +41,7 @@ export async function createAgent(request: CreateAgentRequest): Promise<Agent> {
     const err = (await res.json().catch(() => ({}))) as { detail?: string };
     throw new Error(err.detail ?? `Failed to create agent: ${res.statusText}`);
   }
-  return res.json() as Promise<Agent>;
+  return normalizeAgent((await res.json()) as AgentResponse);
 }
 
 export async function updateAgent(
@@ -41,7 +57,7 @@ export async function updateAgent(
     const err = (await res.json().catch(() => ({}))) as { detail?: string };
     throw new Error(err.detail ?? `Failed to update agent: ${res.statusText}`);
   }
-  return res.json() as Promise<Agent>;
+  return normalizeAgent((await res.json()) as AgentResponse);
 }
 
 export async function deleteAgent(name: string): Promise<void> {

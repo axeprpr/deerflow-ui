@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useMemo } from "react";
 
 import {
@@ -37,6 +37,8 @@ export function WorkspaceHeader({
 }: React.ComponentProps<"header">) {
   const { t } = useI18n();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
   const segments = useMemo(() => {
     const parts = pathname?.split("/") || [];
     if (parts.length > 0) {
@@ -57,7 +59,7 @@ export function WorkspaceHeader({
             {segments?.[0] && (
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <Link href={`/${segments[0]}`}>
+                  <Link href={`/${segments[0]}${mockSuffix}`}>
                     {nameOfSegment(segments[0], t)}
                   </Link>
                 </BreadcrumbLink>
@@ -69,7 +71,7 @@ export function WorkspaceHeader({
                 <BreadcrumbItem>
                   {segments.length >= 2 ? (
                     <BreadcrumbLink asChild>
-                      <Link href={`/${segments[0]}/${segments[1]}`}>
+                      <Link href={`/${segments[0]}/${segments[1]}${mockSuffix}`}>
                         {nameOfSegment(segments[1], t)}
                       </Link>
                     </BreadcrumbLink>

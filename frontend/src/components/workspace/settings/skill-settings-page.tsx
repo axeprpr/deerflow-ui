@@ -60,7 +60,8 @@ function SkillSettingsList({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
+  const isMock = searchParams.get("mock") === "true";
+  const mockSuffix = isMock ? "?mock=true" : "";
   const [filter, setFilter] = useState<string>("public");
   const { mutate: enableSkill } = useEnableSkill();
   const filteredSkills = useMemo(
@@ -108,7 +109,7 @@ function SkillSettingsList({
             <ItemActions>
               <Switch
                 checked={skill.enabled}
-                disabled={env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true"}
+                disabled={isMock || env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true"}
                 onCheckedChange={(checked) =>
                   enableSkill({ skillName: skill.name, enabled: checked })
                 }

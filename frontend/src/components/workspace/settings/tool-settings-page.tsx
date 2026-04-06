@@ -1,5 +1,7 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
+
 import {
   Item,
   ItemActions,
@@ -39,6 +41,8 @@ function MCPServerList({
 }: {
   servers: Record<string, MCPServerConfig>;
 }) {
+  const searchParams = useSearchParams();
+  const isMock = searchParams.get("mock") === "true";
   const { mutate: enableMCPServer } = useEnableMCPServer();
   return (
     <div className="flex w-full flex-col gap-4">
@@ -57,7 +61,7 @@ function MCPServerList({
           <ItemActions>
             <Switch
               checked={config.enabled}
-              disabled={env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true"}
+              disabled={isMock || env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true"}
               onCheckedChange={(checked) =>
                 enableMCPServer({ serverName: name, enabled: checked })
               }

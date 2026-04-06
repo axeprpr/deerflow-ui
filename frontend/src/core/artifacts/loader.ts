@@ -4,6 +4,14 @@ import type { AgentThreadState } from "../threads";
 
 import { urlOfArtifact } from "./utils";
 
+async function readErrorDetail(
+  response: Response,
+  fallback: string,
+): Promise<string> {
+  const text = await response.text().catch(() => "");
+  return text.trim() || fallback;
+}
+
 export async function loadArtifactContent({
   filepath,
   threadId,
@@ -19,6 +27,11 @@ export async function loadArtifactContent({
   }
   const url = urlOfArtifact({ filepath: enhancedFilepath, threadId, isMock });
   const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(
+      await readErrorDetail(response, "Failed to load artifact content"),
+    );
+  }
   const text = await response.text();
   return text;
 }

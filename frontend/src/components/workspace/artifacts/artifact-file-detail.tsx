@@ -83,7 +83,7 @@ export function ArtifactFileDetail({
   const isSupportPreview = useMemo(() => {
     return language === "html" || language === "markdown";
   }, [language]);
-  const { content } = useArtifactContent({
+  const { content, isLoading, error } = useArtifactContent({
     threadId,
     filepath: filepathFromProps,
     enabled: isCodeFile && !isWriteFile,
@@ -236,7 +236,19 @@ export function ArtifactFileDetail({
         </div>
       </ArtifactHeader>
       <ArtifactContent className="p-0">
+        {isCodeFile && isLoading && (
+          <div className="text-muted-foreground flex size-full items-center justify-center text-sm">
+            {t.common.loading}
+          </div>
+        )}
+        {isCodeFile && error && (
+          <div className="text-destructive flex size-full items-center justify-center p-6 text-sm">
+            {error.message}
+          </div>
+        )}
         {isSupportPreview &&
+          !isLoading &&
+          !error &&
           viewMode === "preview" &&
           (language === "markdown" || language === "html") && (
             <ArtifactFilePreview
@@ -244,7 +256,7 @@ export function ArtifactFileDetail({
               language={language ?? "text"}
             />
           )}
-        {isCodeFile && viewMode === "code" && (
+        {isCodeFile && !isLoading && !error && viewMode === "code" && (
           <CodeEditor
             className="size-full resize-none rounded-none border-none"
             value={displayContent ?? ""}

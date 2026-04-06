@@ -15,8 +15,20 @@ export async function loadSkills() {
   if (!skills.ok) {
     throw new Error(await readErrorDetail(skills, "Failed to load skills"));
   }
-  const json = await skills.json();
-  return json.skills as Skill[];
+  const json = (await skills.json()) as {
+    skills?: Array<Partial<Skill>>;
+  };
+  return (json.skills ?? [])
+    .filter((skill): skill is Partial<Skill> & Pick<Skill, "name"> => {
+      return typeof skill.name === "string" && skill.name.trim().length > 0;
+    })
+    .map((skill) => ({
+      name: skill.name,
+      description: skill.description ?? "",
+      category: skill.category ?? "public",
+      license: skill.license ?? "",
+      enabled: skill.enabled ?? false,
+    }));
 }
 
 export async function enableSkill(skillName: string, enabled: boolean) {

@@ -2,8 +2,19 @@ import { getBackendBaseURL } from "@/core/config";
 
 import type { Skill } from "./type";
 
+async function readErrorDetail(
+  response: Response,
+  fallback: string,
+): Promise<string> {
+  const error = await response.json().catch(() => ({ detail: fallback }));
+  return error.detail ?? fallback;
+}
+
 export async function loadSkills() {
   const skills = await fetch(`${getBackendBaseURL()}/api/skills`);
+  if (!skills.ok) {
+    throw new Error(await readErrorDetail(skills, "Failed to load skills"));
+  }
   const json = await skills.json();
   return json.skills as Skill[];
 }
@@ -21,6 +32,11 @@ export async function enableSkill(skillName: string, enabled: boolean) {
       }),
     },
   );
+  if (!response.ok) {
+    throw new Error(
+      await readErrorDetail(response, `Failed to update skill '${skillName}'`),
+    );
+  }
   return response.json();
 }
 
@@ -47,14 +63,13 @@ export async function installSkill(
   });
 
   if (!response.ok) {
-    // Handle HTTP error responses (4xx, 5xx)
-    const errorData = await response.json().catch(() => ({}));
-    const errorMessage =
-      errorData.detail ?? `HTTP ${response.status}: ${response.statusText}`;
     return {
       success: false,
       skill_name: "",
-      message: errorMessage,
+      message: await readErrorDetail(
+        response,
+        `HTTP ${response.status}: ${response.statusText}`,
+      ),
     };
   }
 

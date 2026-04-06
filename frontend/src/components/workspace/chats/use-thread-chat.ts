@@ -24,6 +24,15 @@ export function useThreadChat() {
       setThreadId(uuid());
     }
   }, [pathname]);
+
+  useEffect(() => {
+    if (threadIdFromPath === "new") {
+      return;
+    }
+    setIsNewThread(false);
+    setThreadId(threadIdFromPath);
+  }, [threadIdFromPath]);
+
   const isMock = searchParams.get("mock") === "true";
   return { threadId, isNewThread, setIsNewThread, isMock };
 }

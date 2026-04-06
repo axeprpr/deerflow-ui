@@ -109,6 +109,11 @@ export function useThreadStream({
 
   const queryClient = useQueryClient();
   const updateSubtask = useUpdateSubtask();
+  const threadSearchQueryKey = [
+    "threads",
+    "search",
+    isMock ? "mock" : "default",
+  ] as const;
 
   const thread = useStream<AgentThreadState>({
     client: getAPIClient(isMock),
@@ -136,7 +141,7 @@ export function useThreadStream({
         if (update && "title" in update && update.title) {
           void queryClient.setQueriesData(
             {
-              queryKey: ["threads", "search"],
+              queryKey: threadSearchQueryKey,
               exact: false,
             },
             (oldData: Array<AgentThread> | undefined) => {
@@ -179,7 +184,7 @@ export function useThreadStream({
     },
     onFinish(state) {
       listeners.current.onFinish?.(state.values);
-      void queryClient.invalidateQueries({ queryKey: ["threads", "search"] });
+      void queryClient.invalidateQueries({ queryKey: threadSearchQueryKey });
     },
   });
 
@@ -387,7 +392,7 @@ export function useThreadStream({
             },
           },
         );
-        void queryClient.invalidateQueries({ queryKey: ["threads", "search"] });
+        void queryClient.invalidateQueries({ queryKey: threadSearchQueryKey });
       } catch (error) {
         setOptimisticMessages([]);
         setIsUploading(false);
@@ -396,7 +401,14 @@ export function useThreadStream({
         sendInFlightRef.current = false;
       }
     },
-    [thread, _handleOnStart, t.uploads.uploadingFiles, context, queryClient],
+    [
+      thread,
+      _handleOnStart,
+      t.uploads.uploadingFiles,
+      context,
+      queryClient,
+      threadSearchQueryKey,
+    ],
   );
 
   // Merge thread with optimistic messages for display
@@ -481,6 +493,11 @@ export function useThreads(
 export function useDeleteThread(isMock?: boolean) {
   const queryClient = useQueryClient();
   const apiClient = getAPIClient(isMock);
+  const threadSearchQueryKey = [
+    "threads",
+    "search",
+    isMock ? "mock" : "default",
+  ] as const;
   return useMutation({
     mutationFn: async ({ threadId }: { threadId: string }) => {
       if (isMock) {
@@ -506,7 +523,7 @@ export function useDeleteThread(isMock?: boolean) {
     onSuccess(_, { threadId }) {
       queryClient.setQueriesData(
         {
-          queryKey: ["threads", "search"],
+          queryKey: threadSearchQueryKey,
           exact: false,
         },
         (oldData: Array<AgentThread> | undefined) => {
@@ -518,7 +535,7 @@ export function useDeleteThread(isMock?: boolean) {
       );
     },
     onSettled() {
-      void queryClient.invalidateQueries({ queryKey: ["threads", "search"] });
+      void queryClient.invalidateQueries({ queryKey: threadSearchQueryKey });
     },
   });
 }
@@ -526,6 +543,11 @@ export function useDeleteThread(isMock?: boolean) {
 export function useRenameThread(isMock?: boolean) {
   const queryClient = useQueryClient();
   const apiClient = getAPIClient(isMock);
+  const threadSearchQueryKey = [
+    "threads",
+    "search",
+    isMock ? "mock" : "default",
+  ] as const;
   return useMutation({
     mutationFn: async ({
       threadId,
@@ -544,7 +566,7 @@ export function useRenameThread(isMock?: boolean) {
     onSuccess(_, { threadId, title }) {
       queryClient.setQueriesData(
         {
-          queryKey: ["threads", "search"],
+          queryKey: threadSearchQueryKey,
           exact: false,
         },
         (oldData: Array<AgentThread>) => {

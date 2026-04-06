@@ -9,19 +9,27 @@ import {
 } from "./api";
 import type { CreateAgentRequest, UpdateAgentRequest } from "./types";
 
-export function useAgents() {
+type AgentQueryOptions = {
+  enabled?: boolean;
+};
+
+export function useAgents(options?: AgentQueryOptions) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["agents"],
+    queryKey: ["agents", options?.enabled ?? true],
     queryFn: () => listAgents(),
+    enabled: options?.enabled ?? true,
   });
   return { agents: data ?? [], isLoading, error };
 }
 
-export function useAgent(name: string | null | undefined) {
+export function useAgent(
+  name: string | null | undefined,
+  options?: AgentQueryOptions,
+) {
   const { data, isLoading, error } = useQuery({
-    queryKey: ["agents", name],
+    queryKey: ["agents", name, options?.enabled ?? true],
     queryFn: () => getAgent(name!),
-    enabled: !!name,
+    enabled: !!name && (options?.enabled ?? true),
   });
   return { agent: data ?? null, isLoading, error };
 }

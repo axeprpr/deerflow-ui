@@ -12,10 +12,10 @@ import { AgentCard } from "./agent-card";
 
 export function AgentGallery() {
   const { t } = useI18n();
-  const { agents, isLoading } = useAgents();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isMock = searchParams.get("mock") === "true";
+  const { agents, isLoading } = useAgents({ enabled: !isMock });
 
   useEffect(() => {
     if (!isMock) {

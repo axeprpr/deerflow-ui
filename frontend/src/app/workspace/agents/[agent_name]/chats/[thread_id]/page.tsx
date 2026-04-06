@@ -36,10 +36,9 @@ export default function AgentChatPage() {
     agent_name: string;
   }>();
 
-  const { agent } = useAgent(agent_name);
-  const threadContext = { ...settings.context, agent_name };
-
   const { threadId, isNewThread, setIsNewThread, isMock } = useThreadChat();
+  const { agent } = useAgent(agent_name, { enabled: !isMock });
+  const threadContext = { ...settings.context, agent_name };
   const mockSuffix = isMock ? "?mock=true" : "";
   useSpecificChatMode();
 

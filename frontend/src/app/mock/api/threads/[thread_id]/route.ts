@@ -34,6 +34,18 @@ export async function GET(
     stringFromUnknown(threadData.updated_at) ??
     stringFromUnknown(threadData.updatedAt) ??
     createdAt;
+  const modelName =
+    stringFromUnknown(threadData.model_name) ??
+    stringFromUnknown(metadata?.model_name) ??
+    stringFromUnknown(metadata?.modelName) ??
+    stringFromUnknown(configurable?.model_name) ??
+    stringFromUnknown(configurable?.modelName);
+  const reasoningEffort =
+    stringFromUnknown(threadData.reasoning_effort) ??
+    stringFromUnknown(metadata?.reasoning_effort) ??
+    stringFromUnknown(metadata?.reasoningEffort) ??
+    stringFromUnknown(configurable?.reasoning_effort) ??
+    stringFromUnknown(configurable?.reasoningEffort);
 
   return Response.json({
     ...threadData,
@@ -41,11 +53,29 @@ export async function GET(
     created_at: createdAt,
     updated_at: updatedAt,
     title: stringFromUnknown(threadData.title) ?? stringFromUnknown(values?.title),
+    assistant_id:
+      stringFromUnknown(threadData.assistant_id) ??
+      stringFromUnknown(metadata?.assistant_id) ??
+      stringFromUnknown(metadata?.assistantId),
+    graph_id:
+      stringFromUnknown(threadData.graph_id) ??
+      stringFromUnknown(metadata?.graph_id) ??
+      stringFromUnknown(metadata?.graphId),
+    run_id:
+      stringFromUnknown(threadData.run_id) ??
+      stringFromUnknown(metadata?.run_id) ??
+      stringFromUnknown(metadata?.runId),
     agent_name:
       stringFromUnknown(threadData.agent_name) ??
       stringFromUnknown(metadata?.agent_name) ??
       stringFromUnknown(metadata?.agentName) ??
       stringFromUnknown(configurable?.agent_name) ??
       stringFromUnknown(configurable?.agentName),
+    mode:
+      stringFromUnknown(threadData.mode) ??
+      stringFromUnknown(metadata?.mode) ??
+      stringFromUnknown(configurable?.mode),
+    model_name: modelName,
+    reasoning_effort: reasoningEffort,
   });
 }

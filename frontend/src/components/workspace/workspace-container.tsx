@@ -38,13 +38,18 @@ export function WorkspaceHeader({
   const { t } = useI18n();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
+  const isMock = searchParams.get("mock") === "true";
   const segments = useMemo(() => {
     const parts = pathname?.split("/") || [];
     if (parts.length > 0) {
       return parts.slice(1, 3);
     }
   }, [pathname]);
+  const workspaceHref = isMock ? "/workspace?mock=true" : "/workspace";
+  const sectionHref =
+    segments?.[1] === "chats" && isMock
+      ? `/${segments[0]}/${segments[1]}?mock=true`
+      : `/${segments?.[0]}/${segments?.[1]}`;
   return (
     <header
       className={cn(
@@ -59,7 +64,7 @@ export function WorkspaceHeader({
             {segments?.[0] && (
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink asChild>
-                  <Link href={`/${segments[0]}${mockSuffix}`}>
+                  <Link href={workspaceHref}>
                     {nameOfSegment(segments[0], t)}
                   </Link>
                 </BreadcrumbLink>
@@ -71,7 +76,7 @@ export function WorkspaceHeader({
                 <BreadcrumbItem>
                   {segments.length >= 2 ? (
                     <BreadcrumbLink asChild>
-                      <Link href={`/${segments[0]}/${segments[1]}${mockSuffix}`}>
+                      <Link href={sectionHref}>
                         {nameOfSegment(segments[1], t)}
                       </Link>
                     </BreadcrumbLink>

@@ -3,8 +3,10 @@ import path from "path";
 
 type ThreadSearchRequest = {
   limit?: number;
+  pageSize?: number;
+  page_size?: number;
   offset?: number;
-  sortBy?: "updated_at" | "created_at";
+  sortBy?: "updated_at" | "created_at" | "updatedAt" | "createdAt" | "title";
   sortOrder?: "asc" | "desc";
 };
 
@@ -14,6 +16,12 @@ type MockThreadSearchResult = Record<string, unknown> & {
   updated_at: string | undefined;
   title?: string;
   agent_name?: string;
+  assistant_id?: string;
+  graph_id?: string;
+  run_id?: string;
+  mode?: string;
+  model_name?: string;
+  reasoning_effort?: string;
 };
 
 function stringFromUnknown(value: unknown): string | undefined {
@@ -29,7 +37,7 @@ function mapFromUnknown(value: unknown): Record<string, unknown> | undefined {
 export async function POST(request: Request) {
   const body = ((await request.json().catch(() => ({}))) ?? {}) as ThreadSearchRequest;
 
-  const rawLimit = body.limit;
+  const rawLimit = body.limit ?? body.pageSize ?? body.page_size;
   let limit = 50;
   if (typeof rawLimit === "number") {
     const normalizedLimit = Math.max(0, Math.floor(rawLimit));
@@ -46,7 +54,12 @@ export async function POST(request: Request) {
       offset = normalizedOffset;
     }
   }
-  const sortBy = body.sortBy ?? "updated_at";
+  const sortBy =
+    body.sortBy === "updatedAt"
+      ? "updated_at"
+      : body.sortBy === "createdAt"
+        ? "created_at"
+        : body.sortBy ?? "updated_at";
   const sortOrder = body.sortOrder ?? "desc";
 
   const threadsDir = fs.readdirSync(
@@ -77,24 +90,61 @@ export async function POST(request: Request) {
           stringFromUnknown(threadData.updated_at) ??
           stringFromUnknown(threadData.updatedAt) ??
           createdAt;
+        const modelName =
+          stringFromUnknown(threadData.model_name) ??
+          stringFromUnknown(metadata?.model_name) ??
+          stringFromUnknown(metadata?.modelName) ??
+          stringFromUnknown(configurable?.model_name) ??
+          stringFromUnknown(configurable?.modelName);
+        const reasoningEffort =
+          stringFromUnknown(threadData.reasoning_effort) ??
+          stringFromUnknown(metadata?.reasoning_effort) ??
+          stringFromUnknown(metadata?.reasoningEffort) ??
+          stringFromUnknown(configurable?.reasoning_effort) ??
+          stringFromUnknown(configurable?.reasoningEffort);
         return {
           ...threadData,
           thread_id: threadId.name,
           created_at: createdAt,
           updated_at: updatedAt,
           title: stringFromUnknown(threadData.title) ?? stringFromUnknown(values?.title),
+          assistant_id:
+            stringFromUnknown(threadData.assistant_id) ??
+            stringFromUnknown(metadata?.assistant_id) ??
+            stringFromUnknown(metadata?.assistantId),
+          graph_id:
+            stringFromUnknown(threadData.graph_id) ??
+            stringFromUnknown(metadata?.graph_id) ??
+            stringFromUnknown(metadata?.graphId),
+          run_id:
+            stringFromUnknown(threadData.run_id) ??
+            stringFromUnknown(metadata?.run_id) ??
+            stringFromUnknown(metadata?.runId),
           agent_name:
             stringFromUnknown(threadData.agent_name) ??
             stringFromUnknown(metadata?.agent_name) ??
             stringFromUnknown(metadata?.agentName) ??
             stringFromUnknown(configurable?.agent_name) ??
             stringFromUnknown(configurable?.agentName),
+          mode:
+            stringFromUnknown(threadData.mode) ??
+            stringFromUnknown(metadata?.mode) ??
+            stringFromUnknown(configurable?.mode),
+          model_name: modelName,
+          reasoning_effort: reasoningEffort,
         };
       }
       return null;
     })
     .filter((thread): thread is MockThreadSearchResult => thread !== null)
     .sort((a, b) => {
+      if (sortBy === "title") {
+        const aTitle = (a.title ?? "").toLowerCase();
+        const bTitle = (b.title ?? "").toLowerCase();
+        return sortOrder === "asc"
+          ? aTitle.localeCompare(bTitle)
+          : bTitle.localeCompare(aTitle);
+      }
       const aTimestamp = a[sortBy];
       const bTimestamp = b[sortBy];
       const aParsed =

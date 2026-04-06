@@ -1,3 +1,5 @@
+"use client";
+
 import {
   createContext,
   useCallback,
@@ -5,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useSearchParams } from "next/navigation";
 
 import { useSidebar } from "@/components/ui/sidebar";
 import { env } from "@/env";
@@ -32,11 +35,13 @@ interface ArtifactsProviderProps {
 }
 
 export function ArtifactsProvider({ children }: ArtifactsProviderProps) {
+  const searchParams = useSearchParams();
+  const isMock = searchParams.get("mock") === "true";
   const [artifacts, setArtifacts] = useState<string[]>([]);
   const [selectedArtifact, setSelectedArtifact] = useState<string | null>(null);
   const [autoSelect, setAutoSelect] = useState(true);
   const [open, setOpen] = useState(
-    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true",
+    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock,
   );
   const [autoOpen, setAutoOpen] = useState(true);
   const { setOpen: setSidebarOpen } = useSidebar();
@@ -44,14 +49,14 @@ export function ArtifactsProvider({ children }: ArtifactsProviderProps) {
   const select = useCallback(
     (artifact: string, autoSelect = false) => {
       setSelectedArtifact(artifact);
-      if (env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY !== "true") {
+      if (env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY !== "true" && !isMock) {
         setSidebarOpen(false);
       }
       if (!autoSelect) {
         setAutoSelect(false);
       }
     },
-    [setSidebarOpen, setSelectedArtifact, setAutoSelect],
+    [isMock, setSidebarOpen, setSelectedArtifact, setAutoSelect],
   );
 
   const deselect = useCallback(() => {

@@ -164,9 +164,9 @@ export function RecentChatList() {
     <>
       <SidebarGroup>
         <SidebarGroupLabel>
-          {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY !== "true"
-            ? t.sidebar.recentChats
-            : t.sidebar.demoChats}
+          {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock
+            ? t.sidebar.demoChats
+            : t.sidebar.recentChats}
         </SidebarGroupLabel>
         <SidebarGroupContent className="group-data-[collapsible=icon]:pointer-events-none group-data-[collapsible=icon]:-mt-8 group-data-[collapsible=icon]:opacity-0">
           <SidebarMenu>

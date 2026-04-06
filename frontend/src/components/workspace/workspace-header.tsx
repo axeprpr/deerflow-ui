@@ -21,7 +21,8 @@ export function WorkspaceHeader({ className }: { className?: string }) {
   const { state } = useSidebar();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const mockSuffix = searchParams.get("mock") === "true" ? "?mock=true" : "";
+  const isMock = searchParams.get("mock") === "true";
+  const mockSuffix = isMock ? "?mock=true" : "";
   const newChatPath = `${newChatPathOfPathname(pathname)}${mockSuffix}`;
   return (
     <>
@@ -40,8 +41,11 @@ export function WorkspaceHeader({ className }: { className?: string }) {
           </div>
         ) : (
           <div className="flex items-center justify-between gap-2">
-            {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" ? (
-              <Link href="/" className="text-primary ml-2 font-serif">
+            {env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || isMock ? (
+              <Link
+                href={isMock ? "/workspace?mock=true" : "/"}
+                className="text-primary ml-2 font-serif"
+              >
                 DeerFlow
               </Link>
             ) : (

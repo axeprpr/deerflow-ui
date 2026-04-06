@@ -18,6 +18,23 @@ export async function loadModels(isMock?: boolean) {
   if (!res.ok) {
     throw new Error(await readErrorDetail(res, "Failed to load models"));
   }
-  const { models } = (await res.json()) as { models: Model[] };
-  return models;
+  const { models } = (await res.json()) as {
+    models: Array<
+      Model & {
+        displayName?: string;
+        supportsThinking?: boolean;
+        supportsReasoningEffort?: boolean;
+      }
+    >;
+  };
+  return models.map((model) => ({
+    ...model,
+    display_name: model.display_name ?? model.displayName ?? model.name,
+    supports_thinking:
+      model.supports_thinking ?? model.supportsThinking ?? false,
+    supports_reasoning_effort:
+      model.supports_reasoning_effort ??
+      model.supportsReasoningEffort ??
+      false,
+  }));
 }

@@ -203,17 +203,19 @@ export function RecentChatList() {
                               side={"right"}
                               align={"start"}
                             >
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  handleRenameClick(
-                                    thread.thread_id,
-                                    titleOfThread(thread),
-                                  )
-                                }
-                              >
-                                <Pencil className="text-muted-foreground" />
-                                <span>{t.common.rename}</span>
-                              </DropdownMenuItem>
+                              {!isMock && (
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    handleRenameClick(
+                                      thread.thread_id,
+                                      titleOfThread(thread),
+                                    )
+                                  }
+                                >
+                                  <Pencil className="text-muted-foreground" />
+                                  <span>{t.common.rename}</span>
+                                </DropdownMenuItem>
+                              )}
                               <DropdownMenuItem
                                 onSelect={() => handleShare(thread)}
                               >
@@ -244,13 +246,17 @@ export function RecentChatList() {
                                   </DropdownMenuItem>
                                 </DropdownMenuSubContent>
                               </DropdownMenuSub>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                onSelect={() => handleDelete(thread.thread_id)}
-                              >
-                                <Trash2 className="text-muted-foreground" />
-                                <span>{t.common.delete}</span>
-                              </DropdownMenuItem>
+                              {!isMock && (
+                                <>
+                                  <DropdownMenuSeparator />
+                                  <DropdownMenuItem
+                                    onSelect={() => handleDelete(thread.thread_id)}
+                                  >
+                                    <Trash2 className="text-muted-foreground" />
+                                    <span>{t.common.delete}</span>
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         )}

@@ -34,7 +34,12 @@ function agentPathOfDemoThread(threadId: string) {
   return `/workspace/chats/${threadId}?mock=true`;
 }
 
-export default function WorkspacePage() {
+export default function WorkspacePage({
+  searchParams,
+}: {
+  searchParams?: { mock?: string };
+}) {
+  const mockSuffix = searchParams?.mock === "true" ? "?mock=true" : "";
   if (env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true") {
     const firstThread = fs
       .readdirSync(path.resolve(process.cwd(), "public/demo/threads"), {
@@ -45,5 +50,5 @@ export default function WorkspacePage() {
       return redirect(agentPathOfDemoThread(firstThread.name));
     }
   }
-  return redirect("/workspace/chats/new");
+  return redirect(`/workspace/chats/new${mockSuffix}`);
 }

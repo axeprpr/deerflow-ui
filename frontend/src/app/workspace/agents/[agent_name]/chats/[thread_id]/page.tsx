@@ -69,7 +69,7 @@ export default function AgentChatPage() {
                 : textContent;
           }
         }
-        showNotification(state.title, { body });
+        showNotification(state.title ?? "Conversation finished", { body });
       }
     },
   });

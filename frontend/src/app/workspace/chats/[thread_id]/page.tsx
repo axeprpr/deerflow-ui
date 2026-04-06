@@ -64,7 +64,7 @@ export default function ChatPage() {
                 : textContent;
           }
         }
-        showNotification(state.title, { body });
+        showNotification(state.title ?? "Conversation finished", { body });
       }
     },
   });

@@ -18,6 +18,7 @@ import {
   getFileIcon,
   getFileName,
 } from "@/core/utils/files";
+import { env } from "@/env";
 import { cn } from "@/lib/utils";
 
 import { useThread } from "../messages/context";
@@ -50,7 +51,7 @@ export function ArtifactFileList({
       e.stopPropagation();
       e.preventDefault();
 
-      if (installingFile) return;
+      if (isMock || env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" || installingFile) return;
 
       setInstallingFile(filepath);
       try {
@@ -70,7 +71,7 @@ export function ArtifactFileList({
         setInstallingFile(null);
       }
     },
-    [threadId, installingFile],
+    [threadId, installingFile, isMock],
   );
 
   return (
@@ -95,7 +96,11 @@ export function ArtifactFileList({
               {file.endsWith(".skill") && (
                 <Button
                   variant="ghost"
-                  disabled={isMock || installingFile === file}
+                  disabled={
+                    isMock ||
+                    env.NEXT_PUBLIC_STATIC_WEBSITE_ONLY === "true" ||
+                    installingFile === file
+                  }
                   onClick={(e) => handleInstallSkill(e, file)}
                 >
                   {installingFile === file ? (
